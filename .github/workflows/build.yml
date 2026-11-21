@@ -1,5 +1,4 @@
 name: Build Android APK
-
 on:
   workflow_dispatch:
 
@@ -23,16 +22,17 @@ jobs:
           java-version: 17
 
       - name: Установить Gradle
-        run:       - name: Установить Gradle
+        run: |
           wget -q https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
           unzip -q gradle-8.11.1-bin.zip -d /tmp
-          echo "/tmp/gradle-8.11.1/bin" >> $GITHUB_
+          echo "/tmp/gradle-8.11.1/bin" >> $GITHUB_PATH
 
       - name: Собрать APK
         run: |
-          DIR=$(find project -type f -name settings.gradle.kts -o -name settings.gradle | head -n 1)
+          DIR=$(find project -type f \( -name settings.gradle.kts -o -name settings.gradle \) | head -n 1)
           if [ -z "$DIR" ]; then
-            echo "Файл настроек Gradle не найден!"
+            echo "Файл settings.gradle не найден!"
+            find project -maxdepth 5 -type f
             exit 1
           fi
           cd "$(dirname "$DIR")"
