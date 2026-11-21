@@ -23,10 +23,10 @@ jobs:
           java-version: 17
 
       - name: Установить Gradle
-        run: |
-          wget -q https://services.gradle.org/distributions/gradle-8.10.2-bin.zip
-          unzip -q gradle-8.10.2-bin.zip -d /tmp
-          echo "/tmp/gradle-8.10.2/bin" >> $GITHUB_PATH
+        run:       - name: Установить Gradle
+          wget -q https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+          unzip -q gradle-8.11.1-bin.zip -d /tmp
+          echo "/tmp/gradle-8.11.1/bin" >> $GITHUB_
 
       - name: Собрать APK
         run: |
