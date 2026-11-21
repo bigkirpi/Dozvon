@@ -27,16 +27,27 @@ jobs:
           unzip -q gradle-8.11.1-bin.zip -d /tmp
           echo "/tmp/gradle-8.11.1/bin" >> $GITHUB_PATH
 
+      - name: Настроить версии Java и Kotlin
+        run: |
+          cat > /tmp/compat.gradle <<'EOF'
+          allprojects {
+              afterEvaluate {
+                  tasks.withType(JavaCompile).configureEach {
+                      sourceCompatibility = "17"
+                      targetCompatibility = "17"
+                  }
+                  tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                      kotlinOptions.jvmTarget = "17"
+                  }
+              }
+          }
+          EOF
+
       - name: Собрать APK
         run: |
           DIR=$(find project -type f \( -name settings.gradle.kts -o -name settings.gradle \) | head -n 1)
-          if [ -z "$DIR" ]; then
-            echo "Файл settings.gradle не найден!"
-            find project -maxdepth 5 -type f
-            exit 1
-          fi
           cd "$(dirname "$DIR")"
-          gradle assembleDebug
+          gradle -I /tmp/compat.gradle assembleDebug
 
       - name: Сохранить APK
         uses: actions/upload-artifact@v4
