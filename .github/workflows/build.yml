@@ -8,26 +8,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Получить репозиторий
         uses: actions/checkout@v4
 
-      - name: Unzip project
+      - name: Распаковать проект
         run: |
+          mkdir -p project
           unzip -o "*.zip" -d project
 
-      - name: Setup Java
+      - name: Настроить Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Build APK
+      - name: Найти Gradle и собрать APK
         run: |
-          cd project
+          GRADLEW=$(find project -type f -name gradlew | head -n 1)
+          if [ -z "$GRADLEW" ]; then
+            echo "Файл gradlew не найден!"
+            find project -maxdepth 4 -type f
+            exit 1
+          fi
+          DIR=$(dirname "$GRADLEW")
+          cd "$DIR"
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Сохранить APK
         uses: actions/upload-artifact@v4
         with:
           name: APK
